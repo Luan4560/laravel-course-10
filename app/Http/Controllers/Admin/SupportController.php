@@ -23,7 +23,7 @@ class SupportController extends Controller
   {
 
     if (!$support = Support::find($id)) {
-      return redirect()->back();
+      return back();
     }
 
     return view('admin/supports/show', compact('support'));
@@ -41,6 +41,32 @@ class SupportController extends Controller
     $data['status'] = 'a';
 
     $support->create($data);
+
+    return redirect()->route('supports.index');
+  }
+
+  // Metodo que busca no banco support para ser editado e retorna a view 
+  // para o formulárdio de edição
+  public function edit(Support $support, string|int $id)
+  {
+    if (!$support = $support->where('id', $id)->first()) {
+      return back();
+    }
+
+    return view('admin/supports.edit', compact('support'));
+  }
+
+  // Metodo para atualizar o support no banco, buscando pelo id e editando 
+  // itens especificos como subject e body
+  public function update(Request $request, Support $support, string|int $id)
+  {
+    if (!$support = $support->find($id)) {
+      return back();
+    }
+
+    $support->update($request->only([
+      'subject', 'body'
+    ]));
 
     return redirect()->route('supports.index');
   }
